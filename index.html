@@ -18,7 +18,11 @@
   <script src="lib/xlsx.full.min.js"></script>
 
   <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://accounts.google.com/gsi/client" 
+        async 
+        defer 
+        onload="window._gsiReady = true">
+</script>
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/base.css">

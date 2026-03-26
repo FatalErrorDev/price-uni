@@ -39,7 +39,7 @@ var FOLDERS = {
 
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: clientId,
-      scope: 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file',
+      scope: 'https://www.googleapis.com/auth/drive.file',
       callback: function (response) {
         if (response.error) {
           console.error('OAuth error:', response.error);
@@ -138,11 +138,15 @@ var FOLDERS = {
     updateAuthUI(false);
     // Wait for GSI library to load
     var waitForGSI = setInterval(function () {
-      if (typeof google !== 'undefined' && google.accounts) {
+      if (window._gsiReady && 
+          typeof google !== 'undefined' &&
+          google.accounts &&
+          google.accounts.oauth2 &&
+          typeof google.accounts.oauth2.initTokenClient === 'function') {
         clearInterval(waitForGSI);
         initDrive();
       }
-    }, 200);
+    }, 100);
     // Stop waiting after 10s
     setTimeout(function () { clearInterval(waitForGSI); }, 10000);
   });
