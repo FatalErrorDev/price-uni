@@ -162,15 +162,26 @@
     });
   }
 
+  var DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  function dateToDayName(dateStr) {
+    // DD-MM-YYYY → day-of-week abbreviation
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return '';
+    var d = new Date(parts[2], parts[1] - 1, parts[0]);
+    return isNaN(d.getTime()) ? '' : DAY_NAMES[d.getDay()];
+  }
+
   function createCompCoverageLineChart(canvasId, dates, analyses) {
     destroyChart(canvasId);
     var ctx = document.getElementById(canvasId);
     if (!ctx) return;
     var d = getChartDefaults();
+    var tickColor = '#b0b0a8';
 
     var compColors = [
-      '#e06090', '#40c8a0', '#d0a030', '#8070e0',
-      '#50b8d8', '#c05050', '#70b040', '#d080c0'
+      '#b349da', '#31ac87', '#eee360', '#6150f8',
+      '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
     ];
 
     // Collect all competitor names from all analyses
@@ -181,6 +192,21 @@
           if (competitors.indexOf(c) === -1) competitors.push(c);
         });
       }
+    });
+
+    // Build multiline labels: date + day of week
+    var labels = dates.map(function (dt) {
+      var day = dateToDayName(dt);
+      return day ? [dt, day] : [dt];
+    });
+
+    // Compute per-date totals (sum of visible competitors)
+    var totals = analyses.map(function (a) {
+      var sum = 0;
+      if (a.compCoverage) {
+        competitors.forEach(function (c) { sum += (a.compCoverage[c] || 0); });
+      }
+      return sum;
     });
 
     var datasets = competitors.map(function (comp, i) {
@@ -201,25 +227,54 @@
       };
     });
 
+    // Custom plugin to draw sum totals above each x-tick
+    var sumPlugin = {
+      id: 'sumTotals',
+      afterDraw: function (chart) {
+        var ctx2 = chart.ctx;
+        var xScale = chart.scales.x;
+        var yScale = chart.scales.y;
+        ctx2.save();
+        ctx2.font = '11px ' + d.fontMono;
+        ctx2.fillStyle = tickColor;
+        ctx2.textAlign = 'center';
+        for (var i = 0; i < totals.length; i++) {
+          // Recalculate sum from visible datasets only
+          var visibleSum = 0;
+          chart.data.datasets.forEach(function (ds, idx) {
+            if (chart.isDatasetVisible(idx)) {
+              visibleSum += (ds.data[i] || 0);
+            }
+          });
+          var x = xScale.getPixelForValue(i);
+          var y = yScale.top - 6;
+          ctx2.fillText(visibleSum, x, y);
+        }
+        ctx2.restore();
+      }
+    };
+
     chartInstances[canvasId] = new Chart(ctx, {
       type: 'line',
-      data: { labels: dates, datasets: datasets },
+      data: { labels: labels, datasets: datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
         plugins: { legend: { display: false } },
         scales: {
           x: {
-            ticks: { color: d.text3, font: { family: d.fontMono, size: 10 } },
+            ticks: { color: tickColor, font: { family: d.fontMono, size: 10 } },
             grid: { color: d.gridColor },
           },
           y: {
-            ticks: { color: d.text3, font: { family: d.fontMono, size: 10 } },
+            ticks: { color: tickColor, font: { family: d.fontMono, size: 10 } },
             grid: { color: d.gridColor },
             beginAtZero: true,
           },
         },
       },
+      plugins: [sumPlugin],
     });
 
     return chartInstances[canvasId];
