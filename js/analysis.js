@@ -293,8 +293,15 @@
 
   function renderSegmentBars(segments) {
     if (segments.length === 0) return '<div class="empty-state">No segment data</div>';
+    var sorted = segments.slice().sort(function (a, b) {
+      var aTotal = a.cheaper + a.expensive;
+      var bTotal = b.cheaper + b.expensive;
+      var aRatio = aTotal > 0 ? (a.cheaper / aTotal) : 0;
+      var bRatio = bTotal > 0 ? (b.cheaper / bTotal) : 0;
+      return bRatio - aRatio;
+    });
     var html = '';
-    segments.forEach(function (s) {
+    sorted.forEach(function (s) {
       var total = s.cheaper + s.expensive;
       var cheaperW = total > 0 ? (s.cheaper / total * 100) : 0;
       var expensiveW = total > 0 ? (s.expensive / total * 100) : 0;
