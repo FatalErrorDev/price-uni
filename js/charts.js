@@ -286,10 +286,7 @@
     if (!ctx) return;
     var d = getChartDefaults();
 
-    var seriesColors = [
-      '#b349da', '#31ac87', '#eee360', '#6150f8',
-      '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
-    ];
+    var seriesColors = SERIES_COLORS;
 
     var labels = dates.map(function (dt) {
       var day = dateToDayName(dt);
@@ -374,6 +371,9 @@
   window.createSeriesLineChart = createSeriesLineChart;
   window.SERIES_COLORS = [
     '#b349da', '#31ac87', '#eee360', '#6150f8',
-    '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
+    '#2b9ebf', '#aa3e3e', '#17c844', '#b57622',
+    '#e84393', '#00cec9', '#fdcb6e', '#6c5ce7',
+    '#ff7675', '#55efc4', '#fab1a0', '#74b9ff',
+    '#a29bfe', '#fd79a8', '#81ecec', '#ffeaa7'
   ];
 })();

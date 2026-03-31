@@ -424,7 +424,7 @@ a:hover { text-decoration: underline; }
 
 /* === Mode Toggle === */
 .mode-toggle {
-  display: flex;
+  display: inline-flex;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 8px;
