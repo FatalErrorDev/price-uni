@@ -172,26 +172,12 @@
     return isNaN(d.getTime()) ? '' : DAY_NAMES[d.getDay()];
   }
 
-  function createCompCoverageLineChart(canvasId, dates, analyses) {
+  // seriesData: [{ name: string, values: number[] }, ...]
+  function createMultiLineChart(canvasId, dates, seriesData) {
     destroyChart(canvasId);
     var ctx = document.getElementById(canvasId);
     if (!ctx) return;
     var d = getChartDefaults();
-
-    var compColors = [
-      '#b349da', '#31ac87', '#eee360', '#6150f8',
-      '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
-    ];
-
-    // Collect all competitor names from all analyses
-    var competitors = [];
-    analyses.forEach(function (a) {
-      if (a.compCoverage) {
-        Object.keys(a.compCoverage).forEach(function (c) {
-          if (competitors.indexOf(c) === -1) competitors.push(c);
-        });
-      }
-    });
 
     // Build multiline labels: date + day of week
     var labels = dates.map(function (dt) {
@@ -199,22 +185,11 @@
       return day ? [dt, day] : [dt];
     });
 
-    // Compute per-date totals (sum of visible competitors)
-    var totals = analyses.map(function (a) {
-      var sum = 0;
-      if (a.compCoverage) {
-        competitors.forEach(function (c) { sum += (a.compCoverage[c] || 0); });
-      }
-      return sum;
-    });
-
-    var datasets = competitors.map(function (comp, i) {
-      var color = compColors[i % compColors.length];
+    var datasets = seriesData.map(function (s, i) {
+      var color = SERIES_COLORS[i % SERIES_COLORS.length];
       return {
-        label: comp,
-        data: analyses.map(function (a) {
-          return a.compCoverage ? (a.compCoverage[comp] || 0) : 0;
-        }),
+        label: s.name,
+        data: s.values,
         borderColor: color,
         backgroundColor: color + '18',
         fill: false,
@@ -279,11 +254,17 @@
     return chartInstances[canvasId];
   }
 
+  var SERIES_COLORS = [
+    '#b349da', '#31ac87', '#eee360', '#6150f8',
+    '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
+  ];
+
   // Expose globals
+  window.SERIES_COLORS = SERIES_COLORS;
   window.destroyChart = destroyChart;
   window.destroyAllCharts = destroyAllCharts;
   window.createDistributionChart = createDistributionChart;
   window.createCoverageChart = createCoverageChart;
   window.createLineChart = createLineChart;
-  window.createCompCoverageLineChart = createCompCoverageLineChart;
+  window.createMultiLineChart = createMultiLineChart;
 })();

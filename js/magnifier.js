@@ -141,14 +141,36 @@
 
   function refreshContent() {
     if (!lensContent) return;
+
+    // Snapshot all canvases before cloning (clone loses canvas pixel data)
+    var origCanvases = document.body.querySelectorAll('canvas');
+    var canvasData = [];
+    origCanvases.forEach(function (c) {
+      try {
+        canvasData.push(c.toDataURL());
+      } catch (e) {
+        canvasData.push(null);
+      }
+    });
+
     // Clone the entire body, but exclude the magnifier itself
     var clone = document.body.cloneNode(true);
     var mag = clone.querySelector('#magnifier-overlay');
     if (mag) mag.remove();
 
+    // Replace cloned canvases with images of the originals
+    var clonedCanvases = clone.querySelectorAll('canvas');
+    clonedCanvases.forEach(function (cc, i) {
+      if (canvasData[i]) {
+        var img = document.createElement('img');
+        img.src = canvasData[i];
+        img.style.cssText = 'width:' + cc.width + 'px;height:' + cc.height + 'px;' + cc.style.cssText;
+        cc.parentNode.replaceChild(img, cc);
+      }
+    });
+
     // Apply body styles
     lensContent.innerHTML = '';
-    // Wrap in a container that inherits the body's class/styles
     var wrapper = document.createElement('div');
     wrapper.className = document.body.className;
     wrapper.style.cssText = 'background:' + getComputedStyle(document.body).background + ';';

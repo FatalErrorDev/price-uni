@@ -367,22 +367,16 @@
     html += '<div class="chart-card"><h2>% Cheapest Over Time</h2><div style="height:250px"><canvas id="' + trendCheapId + '"></canvas></div></div>';
     html += '</div>';
 
-    // Competitor scrape coverage over time
+    // Products over time — switchable between Competitors and Segments
     var trendCovId = 'chart-trend-coverage-' + branch;
-    var compColors = [
-      '#b349da', '#31ac87', '#eee360', '#6150f8',
-      '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
-    ];
-    var competitors = BRANCH_CONFIG[branch] ? BRANCH_CONFIG[branch].competitors : [];
 
     html += '<div class="chart-card" style="margin-bottom:1.5rem">';
     html += '<h2>Products Scraped Over Time</h2>';
-    html += '<div class="comp-toggle-row" id="comp-toggles-' + branch + '">';
-    competitors.forEach(function (comp, i) {
-      var color = compColors[i % compColors.length];
-      html += '<button class="comp-toggle active" data-index="' + i + '" style="--comp-color:' + color + '">' + escHtml(comp) + '</button>';
-    });
+    html += '<div class="mode-toggle" style="margin-bottom:0.5rem">';
+    html += '<button class="mode-btn active" data-covmode="competitors" data-branch="' + branch + '">Competitors</button>';
+    html += '<button class="mode-btn" data-covmode="segments" data-branch="' + branch + '">Segments</button>';
     html += '</div>';
+    html += '<div class="comp-toggle-row" id="comp-toggles-' + branch + '"></div>';
     html += '<div style="height:280px"><canvas id="' + trendCovId + '"></canvas></div>';
     html += '</div>';
 
@@ -396,22 +390,75 @@
     createLineChart(trendMedId, dates, medians);
     createLineChart(trendCheapId, dates, pctCheapers);
 
-    // Create competitor coverage chart and wire toggle buttons
-    var covChart = createCompCoverageLineChart(trendCovId, dates, analyses);
-    if (covChart) {
+    // Build series data for both modes
+    var competitors = BRANCH_CONFIG[branch] ? BRANCH_CONFIG[branch].competitors : [];
+    var compSeries = competitors.map(function (comp) {
+      return {
+        name: comp,
+        values: analyses.map(function (a) {
+          return a.compCoverage ? (a.compCoverage[comp] || 0) : 0;
+        })
+      };
+    });
+
+    // Collect all segment names across all analyses
+    var segNames = [];
+    analyses.forEach(function (a) {
+      (a.segments || []).forEach(function (s) {
+        if (segNames.indexOf(s.name) === -1) segNames.push(s.name);
+      });
+    });
+    var segSeries = segNames.map(function (name) {
+      return {
+        name: name,
+        values: analyses.map(function (a) {
+          var seg = (a.segments || []).find(function (s) { return s.name === name; });
+          return seg ? seg.total : 0;
+        })
+      };
+    });
+
+    var covChart = null;
+
+    function renderCovChart(mode) {
+      var series = mode === 'segments' ? segSeries : compSeries;
+      destroyChart(trendCovId);
+      covChart = createMultiLineChart(trendCovId, dates, series);
+
+      // Rebuild toggle buttons
       var toggleContainer = document.getElementById('comp-toggles-' + branch);
       if (toggleContainer) {
+        var btnsHtml = '';
+        series.forEach(function (s, i) {
+          var color = SERIES_COLORS[i % SERIES_COLORS.length];
+          btnsHtml += '<button class="comp-toggle active" data-index="' + i + '" style="--comp-color:' + color + '">' + escHtml(s.name) + '</button>';
+        });
+        toggleContainer.innerHTML = btnsHtml;
+
         toggleContainer.querySelectorAll('.comp-toggle').forEach(function (btn) {
           btn.addEventListener('click', function () {
             var idx = parseInt(btn.dataset.index, 10);
             btn.classList.toggle('active');
             var visible = btn.classList.contains('active');
-            covChart.setDatasetVisibility(idx, visible);
-            covChart.update();
+            if (covChart) {
+              covChart.setDatasetVisibility(idx, visible);
+              covChart.update();
+            }
           });
         });
       }
     }
+
+    renderCovChart('competitors');
+
+    // Wire mode switch buttons
+    container.querySelectorAll('[data-covmode]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        container.querySelectorAll('[data-covmode]').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        renderCovChart(btn.dataset.covmode);
+      });
+    });
   }
 
   function renderSegmentTrend(first, last) {
