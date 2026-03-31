@@ -177,7 +177,6 @@
     var ctx = document.getElementById(canvasId);
     if (!ctx) return;
     var d = getChartDefaults();
-    var tickColor = '#b0b0a8';
 
     var compColors = [
       '#b349da', '#31ac87', '#eee360', '#6150f8',
@@ -236,7 +235,7 @@
         var yScale = chart.scales.y;
         ctx2.save();
         ctx2.font = '11px ' + d.fontMono;
-        ctx2.fillStyle = tickColor;
+        ctx2.fillStyle = d.text3;
         ctx2.textAlign = 'center';
         for (var i = 0; i < totals.length; i++) {
           // Recalculate sum from visible datasets only
@@ -264,11 +263,11 @@
         plugins: { legend: { display: false } },
         scales: {
           x: {
-            ticks: { color: tickColor, font: { family: d.fontMono, size: 10 } },
+            ticks: { color: d.text3, font: { family: d.fontMono, size: 10 } },
             grid: { color: d.gridColor },
           },
           y: {
-            ticks: { color: tickColor, font: { family: d.fontMono, size: 10 } },
+            ticks: { color: d.text3, font: { family: d.fontMono, size: 10 } },
             grid: { color: d.gridColor },
             beginAtZero: true,
           },
