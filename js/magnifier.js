@@ -5,7 +5,7 @@
   'use strict';
 
   var ZOOM = 2;
-  var LENS_R = 90; // lens radius
+  var LENS_R = 118; // lens radius — matches SVG inner glass r=118
   var LENS_D = LENS_R * 2;
   var active = false;
   var dragging = false;
@@ -70,10 +70,6 @@
 
         // Handle highlight streak (wood shine)
         '<path d="M155,275 Q157,340 158,400" stroke="rgba(255,220,180,0.25)" stroke-width="4" fill="none"/>' +
-
-        // Handle end cap (rounded bottom)
-        '<ellipse cx="160" cy="410" rx="30" ry="8" fill="#5a2e14" stroke="#4a2510" stroke-width="1"/>' +
-        '<ellipse cx="160" cy="409" rx="25" ry="5" fill="#704020" opacity="0.6"/>' +
 
         // Metal ferrule (where handle meets rim)
         '<rect x="135" y="258" width="50" height="18" rx="3" fill="url(#ferrule-grad)" stroke="#707070" stroke-width="0.8"/>' +
