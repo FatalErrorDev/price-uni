@@ -369,9 +369,13 @@
 
     // Competitor scrape coverage over time
     var trendCovId = 'chart-trend-coverage-' + branch;
+    // var compColors = [
+    //   '#e06090', '#40c8a0', '#d0a030', '#8070e0',
+    //   '#50b8d8', '#c05050', '#70b040', '#d080c0'
+    // ];
     var compColors = [
-      '#e06090', '#40c8a0', '#d0a030', '#8070e0',
-      '#50b8d8', '#c05050', '#70b040', '#d080c0'
+      '#b349da', '#31ac87', '#eee360', '#6150f8',
+      '#2b9ebf', '#aa3e3e', '#17c844', '#b57622'
     ];
     var competitors = BRANCH_CONFIG[branch] ? BRANCH_CONFIG[branch].competitors : [];
 
