@@ -522,6 +522,16 @@ a:hover { text-decoration: underline; }
   font-size: 0.85rem;
 }
 
+/* === Preload Status === */
+.preload-status {
+  font-size: 0.75rem;
+  color: var(--text3);
+  padding: 0.25rem 0;
+  min-height: 1.25rem;
+}
+.preload-progress { color: var(--text2); }
+.preload-done { color: var(--accent); }
+
 /* === Warning Banner === */
 .warning-banner {
   background: rgba(240,192,64,0.1);

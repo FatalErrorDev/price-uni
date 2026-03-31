@@ -114,6 +114,7 @@
         <button class="mode-btn" data-mode="all" data-branch="sewera">All Files Trend</button>
       </div>
     </div>
+    <div class="preload-status" id="preload-status-sewera"></div>
     <div id="file-list-sewera">
       <div class="empty-state">Connect your Google Drive account to load files.</div>
     </div>
@@ -131,6 +132,7 @@
         <button class="mode-btn" data-mode="all" data-branch="dobromir">All Files Trend</button>
       </div>
     </div>
+    <div class="preload-status" id="preload-status-dobromir"></div>
     <div id="file-list-dobromir">
       <div class="empty-state">Connect your Google Drive account to load files.</div>
     </div>
@@ -139,9 +141,10 @@
     </div>
   </section>
 
-  <!-- JS (order matters: drive → parser → charts → nav → page logic) -->
+  <!-- JS (order matters: drive → parser → cache → charts → nav → page logic) -->
   <script src="js/drive.js"></script>
   <script src="js/parser.js"></script>
+  <script src="js/cache.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/scraping.js"></script>

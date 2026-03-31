@@ -108,6 +108,22 @@
       });
       cachedFiles[branch] = files;
       renderFileTiles(container, files, branch);
+
+      // Background preload: cache all files for this branch
+      preloadAll(branch, files);
+
+      // Also preload the other branch in background
+      var otherBranch = branch === 'sewera' ? 'dobromir' : 'sewera';
+      var otherConfig = BRANCH_CONFIG[otherBranch];
+      if (otherConfig && !cachedFiles[otherBranch]) {
+        listFiles(otherConfig.folderId).then(function (otherFiles) {
+          otherFiles.forEach(function (f) {
+            f.date = extractDate(f.name) || '';
+          });
+          cachedFiles[otherBranch] = otherFiles;
+          preloadAll(otherBranch, otherFiles);
+        }).catch(function () {}); // Swallow errors for background preload
+      }
     } catch (err) {
       container.innerHTML = '<div class="error-msg">' + escHtml(err.message) + '</div>';
     }
@@ -162,11 +178,7 @@
     resultArea.innerHTML = '<div class="loading-state"><span class="spinner"></span> Analyzing ' + escHtml(file.name) + '...</div>';
 
     try {
-      var buf = await downloadFile(file.id);
-      var rows = parseXlsx(buf);
-      var result = analyzeFile(rows, branch);
-      result.date = file.date;
-      result.filename = file.name;
+      var result = await getAnalysis(file, branch);
       renderSingleFile(resultArea, result, branch);
     } catch (err) {
       resultArea.innerHTML = '<div class="error-msg">Analysis error: ' + escHtml(err.message) + '</div>';
@@ -201,11 +213,7 @@
 
       var analyses = [];
       for (var i = 0; i < sorted.length; i++) {
-        var buf = await downloadFile(sorted[i].id);
-        var rows = parseXlsx(buf);
-        var result = analyzeFile(rows, branch);
-        result.date = sorted[i].date;
-        result.filename = sorted[i].name;
+        var result = await getAnalysis(sorted[i], branch);
         analyses.push(result);
       }
 
