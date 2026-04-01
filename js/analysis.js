@@ -447,9 +447,11 @@
         });
       });
 
-      // Wire select all / none toggle
-      var selectAllBtn = document.getElementById('select-all-toggle-' + branch);
-      if (selectAllBtn) {
+      // Wire select all / none toggle (clone to strip stale listeners from previous mode)
+      var oldBtn = document.getElementById('select-all-toggle-' + branch);
+      if (oldBtn) {
+        var selectAllBtn = oldBtn.cloneNode(true);
+        oldBtn.parentNode.replaceChild(selectAllBtn, oldBtn);
         selectAllBtn.textContent = 'None';
         selectAllBtn.addEventListener('click', function () {
           var showAll = selectAllBtn.textContent === 'All';
