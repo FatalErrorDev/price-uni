@@ -136,29 +136,39 @@
     return p;
   }
 
-  // Background preload: iterate files, cache uncached ones
+  // Background preload with bounded concurrency
   function preloadAll(branch, files) {
     if (!files || files.length === 0) return Promise.resolve();
 
+    var CONCURRENCY = 3;
     preloadProgress[branch] = { done: 0, total: files.length, running: true };
     updatePreloadUI(branch);
 
-    var chain = openCache();
-    files.forEach(function (file) {
-      chain = chain.then(function () {
-        if (!preloadProgress[branch].running) return; // Cancelled
-        return getAnalysis(file, branch).then(function () {
-          preloadProgress[branch].done++;
-          updatePreloadUI(branch);
-        }).catch(function (err) {
-          console.warn('[cache] Preload failed for ' + file.name + ':', err.message);
-          preloadProgress[branch].done++;
-          updatePreloadUI(branch);
-        });
-      });
-    });
+    function onDone(file, err) {
+      if (err) console.warn('[cache] Preload failed for ' + file.name + ':', err.message);
+      preloadProgress[branch].done++;
+      updatePreloadUI(branch);
+    }
 
-    return chain.then(function () {
+    return openCache().then(function () {
+      var queue = files.slice();
+      var active = 0;
+      return new Promise(function (resolve) {
+        function next() {
+          if (!preloadProgress[branch].running) { resolve(); return; }
+          while (active < CONCURRENCY && queue.length > 0) {
+            var file = queue.shift();
+            active++;
+            getAnalysis(file, branch)
+              .then(function (f) { return function () { onDone(f); }; }(file))
+              .catch(function (f) { return function (err) { onDone(f, err); }; }(file))
+              .then(function () { active--; next(); });
+          }
+          if (active === 0 && queue.length === 0) resolve();
+        }
+        next();
+      });
+    }).then(function () {
       preloadProgress[branch].running = false;
       updatePreloadUI(branch);
     });

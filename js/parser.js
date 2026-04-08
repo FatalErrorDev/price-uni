@@ -66,14 +66,6 @@ var BRANCH_CONFIG = {
     return '-';
   }
 
-  // Resolve the actual column key from a row once
-  function resolveKey(row, candidates) {
-    for (var i = 0; i < candidates.length; i++) {
-      if (row.hasOwnProperty(candidates[i])) return candidates[i];
-    }
-    return null;
-  }
-
   function analyzeFile(rows, branch) {
     var config = BRANCH_CONFIG[branch];
     if (!config) throw new Error('Unknown branch: ' + branch);
@@ -94,19 +86,8 @@ var BRANCH_CONFIG = {
         producerKeys.push(col);
       }
     });
-    // Log all columns for debugging
-    console.log('[parser] Branch:', branch, '| Columns:', allCols);
-    console.log('[parser] Name keys found:', nameKeys, '| Producer keys found:', producerKeys);
-
-    // Fallback: if no name column found, use all columns as candidates
-    // (the first non-config column is likely the product name)
     if (nameKeys.length === 0) {
-      console.warn('Could not find product name column. Using all columns as fallback.');
       nameKeys = allCols.slice();
-    }
-    if (producerKeys.length === 0) {
-      // Don't fallback producer to everything — just leave empty
-      console.warn('Could not find producer column.');
     }
 
     var total = rows.length;
@@ -251,11 +232,17 @@ var BRANCH_CONFIG = {
     return dateStr.split('-').reverse().join('');
   }
 
+  function escHtml(s) {
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
   // Expose globals
   window.parseXlsx = parseXlsx;
   window.analyzeFile = analyzeFile;
   window.calcMedian = calcMedian;
   window.extractDate = extractDate;
   window.dateSortKey = dateSortKey;
-  window.BRANCH_CONFIG = BRANCH_CONFIG;
+  window.escHtml = escHtml;
 })();

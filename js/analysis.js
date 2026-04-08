@@ -59,10 +59,6 @@
     }
   }
 
-  function getMode(branch) {
-    return currentMode[branch] || 'single';
-  }
-
   async function loadFileList(branch) {
     var config = BRANCH_CONFIG[branch];
     if (!config) return;
@@ -204,18 +200,9 @@
     resultArea.innerHTML = '<div class="loading-state"><span class="spinner"></span> Analyzing ' + files.length + ' files...</div>';
 
     try {
-      // Sort by date chronologically
-      var sorted = files.slice().sort(function (a, b) {
-        var da = a.date ? dateSortKey(a.date) : '';
-        var db = b.date ? dateSortKey(b.date) : '';
-        return da.localeCompare(db);
-      });
-
-      var analyses = [];
-      for (var i = 0; i < sorted.length; i++) {
-        var result = await getAnalysis(sorted[i], branch);
-        analyses.push(result);
-      }
+      var analyses = await Promise.all(files.map(function (f) {
+        return getAnalysis(f, branch);
+      }));
 
       renderTrendView(resultArea, analyses, branch);
     } catch (err) {
@@ -510,11 +497,5 @@
 
   function getResultArea(branch) {
     return document.getElementById('result-' + branch);
-  }
-
-  function escHtml(s) {
-    var div = document.createElement('div');
-    div.textContent = s;
-    return div.innerHTML;
   }
 })();

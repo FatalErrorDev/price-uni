@@ -225,12 +225,6 @@
     updateScheduleButton();
   }
 
-  function escHtml(s) {
-    var div = document.createElement('div');
-    div.textContent = s;
-    return div.innerHTML;
-  }
-
   window.resetRunNow = resetRunNow;
   window.resetSchedule = resetSchedule;
 })();
