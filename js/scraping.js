@@ -256,7 +256,7 @@
         DAY_ORDER.map(function (day) {
           return listFiles(FOLDERS[day]).then(function (files) {
             return files.map(function (f) {
-              return { day: day, name: f.name, modifiedTime: f.modifiedTime, webViewLink: f.webViewLink };
+              return { day: day, id: f.id, name: f.name, modifiedTime: f.modifiedTime, webViewLink: f.webViewLink };
             });
           });
         })
@@ -312,7 +312,10 @@
           } else {
             html += '<span class="day-file-name">' + escHtml(f.name) + '</span>';
           }
+          html += '<div class="day-file-row">';
           html += '<span class="day-file-date">' + escHtml(dateStr) + '</span>';
+          html += '<button class="day-file-delete" data-file-id="' + escHtml(f.id) + '" title="Delete file">&times;</button>';
+          html += '</div>';
           html += '</div>';
         });
         html += '</div>';
@@ -321,6 +324,23 @@
     });
     html += '</div>';
     container.innerHTML = html;
+
+    container.querySelectorAll('.day-file-delete').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var fileId = btn.dataset.fileId;
+        if (!fileId) return;
+        btn.disabled = true;
+        btn.textContent = '\u2026';
+        try {
+          await deleteFile(fileId);
+          loadScheduledFiles();
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = '\u00d7';
+          alert('Delete failed: ' + err.message);
+        }
+      });
+    });
   }
 
   window.resetRunNow = resetRunNow;

@@ -154,6 +154,18 @@ var FOLDERS = {
     return data.files || [];
   }
 
+  async function deleteFile(fileId) {
+    requireAuth();
+    var resp = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId, {
+      method: 'DELETE',
+      headers: { Authorization: 'Bearer ' + accessToken },
+    });
+    if (!resp.ok) {
+      var err = await resp.text();
+      throw new Error('Delete failed: ' + err);
+    }
+  }
+
   async function downloadFile(fileId) {
     requireAuth();
     var resp = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', {
@@ -190,5 +202,6 @@ var FOLDERS = {
   window.isSignedIn = isSignedIn;
   window.uploadFile = uploadFile;
   window.listFiles = listFiles;
+  window.deleteFile = deleteFile;
   window.downloadFile = downloadFile;
 })();

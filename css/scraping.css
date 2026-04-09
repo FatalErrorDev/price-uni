@@ -88,11 +88,42 @@ a.day-file-name:hover {
   color: var(--accent);
 }
 
+.day-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.15rem;
+}
+
 .day-file-date {
-  display: block;
   color: var(--text2);
   font-size: 0.6rem;
-  margin-top: 0.15rem;
+}
+
+.day-file-delete {
+  background: none;
+  border: none;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0 0.2rem;
+  line-height: 1;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.day-file:hover .day-file-delete {
+  opacity: 1;
+}
+
+.day-file-delete:hover {
+  color: #f06060;
+}
+
+.day-file-delete:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* === Scraping Progress Panel === */
