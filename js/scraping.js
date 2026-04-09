@@ -264,8 +264,42 @@
     }
   }
 
+  function renderFileNameHtml(file) {
+    var safeName = escHtml(file.name);
+    if (file.webViewLink) {
+      return '<a class="day-file-name" href="' + escHtml(file.webViewLink) + '" target="_blank" rel="noopener noreferrer" title="' + safeName + '">' + safeName + '</a>';
+    }
+    return '<span class="day-file-name">' + safeName + '</span>';
+  }
+
+  function renderFileHtml(file) {
+    var dateStr = file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString('pl-PL') : '\u2014';
+    return '<div class="day-file">' +
+      renderFileNameHtml(file) +
+      '<div class="day-file-row">' +
+        '<span class="day-file-date">' + escHtml(dateStr) + '</span>' +
+        '<button class="day-file-delete" data-file-id="' + escHtml(file.id) + '" title="Delete file">&times;</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  async function handleDeleteClick(btn) {
+    var fileId = btn.dataset.fileId;
+    if (!fileId) return;
+    if (!confirm('Delete this file from Google Drive?')) return;
+    btn.disabled = true;
+    btn.textContent = '\u2026';
+    try {
+      await deleteFile(fileId);
+      loadScheduledFiles();
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = '\u00d7';
+      alert('Delete failed: ' + err.message);
+    }
+  }
+
   function renderScheduledGrid(container, files, hasPartialError) {
-    // Group files by day
     var byDay = {};
     files.forEach(function (f) { (byDay[f.day] = byDay[f.day] || []).push(f); });
 
@@ -283,20 +317,7 @@
         html += '<span class="day-slot-empty">\u2014</span>';
       } else {
         html += '<div class="day-slot-files">';
-        dayFiles.forEach(function (f) {
-          var dateStr = f.modifiedTime ? new Date(f.modifiedTime).toLocaleDateString('pl-PL') : '\u2014';
-          html += '<div class="day-file">';
-          if (f.webViewLink) {
-            html += '<a class="day-file-name" href="' + escHtml(f.webViewLink) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(f.name) + '">' + escHtml(f.name) + '</a>';
-          } else {
-            html += '<span class="day-file-name">' + escHtml(f.name) + '</span>';
-          }
-          html += '<div class="day-file-row">';
-          html += '<span class="day-file-date">' + escHtml(dateStr) + '</span>';
-          html += '<button class="day-file-delete" data-file-id="' + escHtml(f.id) + '" title="Delete file">&times;</button>';
-          html += '</div>';
-          html += '</div>';
-        });
+        dayFiles.forEach(function (f) { html += renderFileHtml(f); });
         html += '</div>';
       }
       html += '</div>';
@@ -305,20 +326,7 @@
     container.innerHTML = html;
 
     container.querySelectorAll('.day-file-delete').forEach(function (btn) {
-      btn.addEventListener('click', async function () {
-        var fileId = btn.dataset.fileId;
-        if (!fileId) return;
-        btn.disabled = true;
-        btn.textContent = '\u2026';
-        try {
-          await deleteFile(fileId);
-          loadScheduledFiles();
-        } catch (err) {
-          btn.disabled = false;
-          btn.textContent = '\u00d7';
-          alert('Delete failed: ' + err.message);
-        }
-      });
+      btn.addEventListener('click', function () { handleDeleteClick(btn); });
     });
   }
 

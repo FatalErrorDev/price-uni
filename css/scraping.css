@@ -109,11 +109,12 @@ a.day-file-name:hover {
   padding: 0 0.2rem;
   line-height: 1;
   border-radius: 3px;
-  opacity: 0;
+  opacity: 0.4;
   transition: opacity 0.15s, color 0.15s;
 }
 
-.day-file:hover .day-file-delete {
+.day-file:hover .day-file-delete,
+.day-file-delete:focus {
   opacity: 1;
 }
 
