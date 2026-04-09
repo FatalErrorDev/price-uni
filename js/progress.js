@@ -150,7 +150,7 @@
       el.textContent = '\u25cb Connecting\u2026';
       el.className = 'progress-connection-status status-connecting';
     } else {
-      el.textContent = '\u25cb Disconnected';
+      el.innerHTML = '<a href="' + escHtml(RELAY_URL) + '" target="_blank" rel="noopener noreferrer" class="status-disconnected-link">\u25cb Disconnected — click to authorize</a>';
       el.className = 'progress-connection-status status-disconnected';
     }
   }

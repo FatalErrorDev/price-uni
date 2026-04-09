@@ -113,6 +113,15 @@ a.day-file-name:hover {
 .status-connected   { color: #60d060; }
 .status-connecting  { color: #f0c040; }
 .status-disconnected { color: var(--text2); }
+.status-disconnected-link {
+  color: var(--text2);
+  text-decoration: none;
+  cursor: pointer;
+}
+.status-disconnected-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
 
 .progress-columns {
   display: grid;
