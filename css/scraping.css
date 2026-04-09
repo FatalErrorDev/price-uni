@@ -7,42 +7,100 @@ body.page-scraping { --accent: #c8f060; --accent-dim: rgba(200,240,96,0.08); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 .scheduled-header h2 { margin-bottom: 0; }
 
 .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
 
-.scheduled-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
+/* Day grid: 7 columns for Mon–Sun */
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
 }
-.scheduled-table th {
-  text-align: left;
+
+.day-slot {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.day-slot.has-files {
+  border-color: var(--border2);
+  background: var(--bg3);
+}
+
+.day-slot-label {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.05rem;
   color: var(--text3);
-  font-weight: 400;
-  padding: 0.4rem 0.5rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
-.scheduled-table td {
+
+.day-slot.has-files .day-slot-label {
+  color: var(--accent);
+}
+
+.day-slot-empty {
+  color: var(--text2);
+  font-size: 0.65rem;
+  opacity: 0.4;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.day-slot-files {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.day-file {
+  background: var(--bg4);
+  border-radius: 5px;
   padding: 0.4rem 0.5rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text2);
+  font-size: 0.7rem;
 }
-.scheduled-table td:first-child {
+
+.day-file-name {
+  display: block;
   color: var(--text);
-  font-weight: 500;
-}
-.scheduled-table td a {
-  color: var(--text2);
-  max-width: 280px;
-  display: inline-block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-decoration: none;
 }
-.scheduled-table td a:hover { color: var(--accent); }
+
+a.day-file-name:hover {
+  color: var(--accent);
+}
+
+.day-file-date {
+  display: block;
+  color: var(--text2);
+  font-size: 0.6rem;
+  margin-top: 0.15rem;
+}
+
+/* Responsive: stack into rows on narrow screens */
+@media (max-width: 700px) {
+  .day-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 420px) {
+  .day-grid {
+    grid-template-columns: 1fr;
+  }
+}

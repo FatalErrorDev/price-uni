@@ -272,16 +272,12 @@
         }
       });
 
-      if (allFiles.length === 0 && hasError) {
+      if (hasError && results.every(function (r) { return r.status === 'rejected'; })) {
         container.innerHTML = '<div class="error-msg">Failed to load scheduled files.</div>';
         return;
       }
-      if (allFiles.length === 0) {
-        container.innerHTML = '<div class="empty-state">No files scheduled for any day.</div>';
-        return;
-      }
 
-      renderScheduledTable(container, allFiles, hasError);
+      renderScheduledGrid(container, allFiles, hasError);
     } catch (err) {
       container.innerHTML = '<div class="error-msg">' + escHtml(err.message) + '</div>';
     } finally {
@@ -289,23 +285,41 @@
     }
   }
 
-  function renderScheduledTable(container, files, hasPartialError) {
+  function renderScheduledGrid(container, files, hasPartialError) {
+    // Group files by day
+    var byDay = {};
+    files.forEach(function (f) { (byDay[f.day] = byDay[f.day] || []).push(f); });
+
     var html = '';
     if (hasPartialError) {
       html += '<div class="warning-banner">Some folders could not be loaded.</div>';
     }
-    html += '<table class="scheduled-table"><thead><tr>' +
-      '<th>Day</th><th>File</th><th>Uploaded</th>' +
-      '</tr></thead><tbody>';
-    files.forEach(function (f) {
-      var dayLabel = DAY_LABELS[f.day] || f.day;
-      var dateStr = f.modifiedTime ? new Date(f.modifiedTime).toLocaleDateString('pl-PL') : '\u2014';
-      var nameHtml = f.webViewLink
-        ? '<a href="' + escHtml(f.webViewLink) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(f.name) + '">' + escHtml(f.name) + '</a>'
-        : escHtml(f.name);
-      html += '<tr><td>' + escHtml(dayLabel) + '</td><td>' + nameHtml + '</td><td>' + escHtml(dateStr) + '</td></tr>';
+    html += '<div class="day-grid">';
+    DAY_ORDER.forEach(function (day) {
+      var dayFiles = byDay[day] || [];
+      var hasFiles = dayFiles.length > 0;
+      html += '<div class="day-slot' + (hasFiles ? ' has-files' : '') + '">';
+      html += '<span class="day-slot-label">' + escHtml(DAY_LABELS[day]) + '</span>';
+      if (!hasFiles) {
+        html += '<span class="day-slot-empty">\u2014</span>';
+      } else {
+        html += '<div class="day-slot-files">';
+        dayFiles.forEach(function (f) {
+          var dateStr = f.modifiedTime ? new Date(f.modifiedTime).toLocaleDateString('pl-PL') : '\u2014';
+          html += '<div class="day-file">';
+          if (f.webViewLink) {
+            html += '<a class="day-file-name" href="' + escHtml(f.webViewLink) + '" target="_blank" rel="noopener noreferrer" title="' + escHtml(f.name) + '">' + escHtml(f.name) + '</a>';
+          } else {
+            html += '<span class="day-file-name">' + escHtml(f.name) + '</span>';
+          }
+          html += '<span class="day-file-date">' + escHtml(dateStr) + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
     });
-    html += '</tbody></table>';
+    html += '</div>';
     container.innerHTML = html;
   }
 
