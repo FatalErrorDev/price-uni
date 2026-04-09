@@ -13,14 +13,16 @@ body.page-scraping { --accent: #c8f060; --accent-dim: rgba(200,240,96,0.08); }
 
 .btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
 
-/* Day grid: 7 columns for Mon–Sun */
+/* Day grid: 7 slots for Mon–Sun, wraps to multiple rows on narrow screens */
 .day-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .day-slot {
+  flex: 1 1 120px;
+  max-width: calc((100% - 3rem) / 7);
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -91,16 +93,4 @@ a.day-file-name:hover {
   color: var(--text2);
   font-size: 0.6rem;
   margin-top: 0.15rem;
-}
-
-/* Responsive: stack into rows on narrow screens */
-@media (max-width: 700px) {
-  .day-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 420px) {
-  .day-grid {
-    grid-template-columns: 1fr;
-  }
 }
