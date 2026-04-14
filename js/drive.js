@@ -1,16 +1,16 @@
 /* === Google Drive API === */
 
 var FOLDERS = {
-  input:     '1kh24IJPG_h_R3Jrp83oUZWi3M4RxkAQI',
-  monday:    '1nuNs04PMRNeBMbCh5vwKo5687y-3guXe',
-  tuesday:   '1uMeu0lqp5jQ9AqVLjGMtSKg9DH4MkH6f',
-  wednesday: '1QRo0XUVn4Z51HYEwRs6K6FjyKDfimvXa',
-  thursday:  '1vNxfwN1m7ygt5iBYyi021yInA6SG-9Pc',
-  friday:    '1dl9bOAJv-4iYtl7JbX72smmVBcPC_Yq8',
-  saturday:  '1qo7wck8u8Tp8AyzQBS2uirL9sLlTlOOY',
-  sunday:    '1zgvnJvMz2q2yDAdtao4WhNEVGGJuUZOB',
-  sewera:    '1Ni30IrmlkN8tEF2IHkWjP6DOJ4JH36-T',
-  dobromir:  '1rt5sG17r_fC0PT1JhGWwTp2wvzskAedu',
+  input:     '1ZVc2-CEQxPGxUqNRS21oriJ5pC_OjgUB',
+  monday:    '1V06NGq4x0YrXwkjd4X4CcxuYkDfed8mi',
+  tuesday:   '18wHCkZHahJQ3isPlu3uNFeLolt-kCBsR',
+  wednesday: '1mxgRHKkxt90492qhp9H_CPThcF8zoAfx',
+  thursday:  '1UZ_-2b2_DtSGEF0zMWGOQeKu4qTy00uU',
+  friday:    '1th9yZGHzO3-btd0J4GPhcMRtJw9COQAq',
+  saturday:  '1LqYKmDdb5tqHyIVARX-0gJAg6BEqKHoh',
+  sunday:    '1zZW2kSI5U4D_RC22dIa-c8WgMxI6KVGU',
+  sewera:    '1UDqeC8GzD0iq5lDJRdbL1usoiNhyCngq',
+  dobromir:  '1ixaHR6UZYQGCRFehtAp_aTuRmV6ipuGU',
 };
 
 (function () {
