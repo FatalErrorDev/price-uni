@@ -89,32 +89,7 @@
 
     // Set initial state
     switchPage('scraping');
-
-    // Generate favicon
-    generateFavicon();
   });
-
-  function generateFavicon() {
-    var canvas = document.createElement('canvas');
-    canvas.width = 32;
-    canvas.height = 32;
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#0f0f0f';
-    ctx.fillRect(0, 0, 32, 32);
-    ctx.font = 'bold 18px sans-serif';
-    ctx.fillStyle = '#f0ede8';
-    ctx.fillText('S', 2, 20);
-    ctx.fillStyle = '#c8f060';
-    ctx.font = 'bold 14px sans-serif';
-    ctx.fillText('//', 14, 20);
-    var link = document.querySelector("link[rel='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    link.href = canvas.toDataURL();
-  }
 
   // Expose globals
   window.switchPage = switchPage;
