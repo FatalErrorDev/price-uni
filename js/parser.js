@@ -217,6 +217,34 @@ var BRANCH_CONFIG = {
     topExpensiveList.sort(function (a, b) { return b.pct - a.pct; });
     topCheapestList.sort(function (a, b) { return a.pct - b.pct; });
 
+    // Per-product competitor values + segment, keyed by "Kod towaru" (stable product code).
+    // Used by the trend view to diff against the next file (price changes / new tracking).
+    var productCompPrices = {};
+    var productSegments = {};
+    rows.forEach(function (row) {
+      var code = row['Kod towaru'];
+      if (code === undefined || code === null || code === '' || code === '-') {
+        code = findCol(row, codeKeys);
+      }
+      if (!code || code === '-') return;
+      code = String(code).trim();
+      var entry = {};
+      var any = false;
+      config.competitors.forEach(function (c) {
+        var v = row[c];
+        if (hasPrice(v)) {
+          entry[c] = String(v).trim();
+          any = true;
+        }
+      });
+      if (any) {
+        productCompPrices[code] = entry;
+        var segName = row['Segment'] || 'Brak segmentu';
+        if (segName === '-') segName = 'Brak segmentu';
+        productSegments[code] = segName;
+      }
+    });
+
     return {
       branch: branch,
       total: total,
@@ -230,6 +258,8 @@ var BRANCH_CONFIG = {
       dist: dist.map(function (d) { return { label: d.label, count: d.count }; }),
       topExpensive: topExpensiveList.slice(0, 10),
       topCheapest: topCheapestList.slice(0, 10),
+      productCompPrices: productCompPrices,
+      productSegments: productSegments,
     };
   }
 

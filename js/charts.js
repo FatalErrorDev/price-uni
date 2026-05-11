@@ -119,11 +119,12 @@
     });
   }
 
-  function createLineChart(canvasId, labels, values) {
+  function createLineChart(canvasId, labels, values, opts) {
     destroyChart(canvasId);
     var ctx = document.getElementById(canvasId);
     if (!ctx) return;
     var d = getChartDefaults();
+    var ySuffix = (opts && typeof opts.ySuffix === 'string') ? opts.ySuffix : '%';
 
     chartInstances[canvasId] = new Chart(ctx, {
       type: 'line',
@@ -153,7 +154,7 @@
             ticks: {
               color: d.text3,
               font: { family: d.fontMono, size: 10 },
-              callback: function (v) { return v + '%'; },
+              callback: function (v) { return v + ySuffix; },
             },
             grid: { color: d.gridColor },
           },

@@ -6,7 +6,7 @@
   var DB_NAME = 'price-intel-cache';
   var DB_VERSION = 1;
   var STORE_NAME = 'analyses';
-  var CACHE_VERSION = 4; // Bump when analyzeFile() logic changes
+  var CACHE_VERSION = 6; // Bump when analyzeFile() logic changes
 
   var db = null;
   var memoryCache = {}; // Fallback when IndexedDB unavailable
